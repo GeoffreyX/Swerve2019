@@ -101,14 +101,16 @@ void SwerveModule::SetTargetAngle(double targetangle)
     
     m_lasttargetangle = targetangle;
 
+    /// targetangle is reduced to a value inside +- 360
     fmod(targetangle, 360.0);
 
-    //SmartDashboard->PutNumber("Module Target Angle " + moduleNumber, targetangle % 360);
+//  SmartDashboard->PutNumber("Module Target Angle " + moduleNumber, targetangle % 360);
 
     targetangle += m_offset;
 
     double delta = GetCurrentAngle() - targetangle;
 
+    /// Constraints delta and angle to -180 < delta/angle < 180 
     if (delta > 180) 
     {   targetangle += 360; }
     else if (delta < -180)
@@ -116,6 +118,7 @@ void SwerveModule::SetTargetAngle(double targetangle)
 
     delta = GetCurrentAngle() - targetangle;
 
+    /// If the delta is more than 90 from 0, don't invert drive motor
     if (delta > 90 || delta < -90)
     {
         if (delta > 90)
@@ -129,6 +132,7 @@ void SwerveModule::SetTargetAngle(double targetangle)
         m_talondrive->SetInverted(true);
     }
 
+    /// targetangle is increased to adjust to encoders
     targetangle += m_talonangle->GetSelectedSensorPosition(0) * TICKS_PER_REV - GetCurrentAngle();
 
     double currenterror = m_talonangle->GetClosedLoopError(0);
