@@ -8,6 +8,7 @@
 
 #include "SwerveModule.h"
 #include "Const.h"
+#include <cmath>
 
 
 using namespace std;
@@ -78,9 +79,10 @@ SwerveModule::~SwerveModule()
 double SwerveModule::GetCurrentAngle()
 {
     double angle = m_talonangle->GetSelectedSensorPosition(0) * TICKS_PER_REV;
+
     angle -= m_offset;
-    while (angle > 360)
-    {   angle -= 360;   }
+    fmod(angle, 360.0);
+
     if (angle < 0)
     {
         angle += 360.0;
@@ -99,8 +101,7 @@ void SwerveModule::SetTargetAngle(double targetangle)
     
     m_lasttargetangle = targetangle;
 
-    while (targetangle > 360)
-    {   targetangle -= 360; }
+    fmod(targetangle, 360.0);
 
     //SmartDashboard->PutNumber("Module Target Angle " + moduleNumber, targetangle % 360);
 
